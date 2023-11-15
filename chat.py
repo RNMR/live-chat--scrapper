@@ -24,7 +24,8 @@ def configure_driver():
     #Handle the service
     #service = Service(executable_path=r'/usr/bin/chromedriver')
     # Instantiate the Webdriver: Mention the executable path of the webdriver you have downloaded
-    driver = webdriver.Chrome(options=options)
+    # driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome()
     return driver
 
 # ----------------
@@ -36,6 +37,7 @@ def getChat(driver):
     # driver.get(f"https://www.twitch.tv/hasanabi")
     driver.get(f"https://www.twitch.tv/kingsleague")
     # wait for the element to load
+    wait = WebDriverWait(driver, 10)
 
     try:
       # WebDriverWait(driver, 20).until(lambda s: s.find_element("chat-scrollable-area__message-container").is_displayed())
@@ -45,6 +47,9 @@ def getChat(driver):
       print("Timeout :(")
       return None
     i=0
+
+    chat_container = (By.CLASS_NAME, 'chat-scrollable-area__message-container')
+    
     print("moving on...")
 
     # Step 2: Create a parse tree of page sources after searching
