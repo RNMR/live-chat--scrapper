@@ -35,7 +35,7 @@ def getChat(driver):
     # Step 1: Go to pluralsight.com, category section with selected search keyword
     # driver.get(f"https://www.pluralsight.com/search?q=*&categories=course%2Ccloud-courses&sort=displayDate")
     # driver.get(f"https://www.twitch.tv/hasanabi")
-    driver.get(f"https://www.twitch.tv/kingsleague")
+    driver.get(f"https://www.twitch.tv/rubius")
     # wait for the element to load
     wait = WebDriverWait(driver, 10)
 
@@ -48,8 +48,11 @@ def getChat(driver):
       return None
     i=0
 
-    chat_container = (By.CLASS_NAME, 'chat-scrollable-area__message-container')
-    
+    # chat_container = (By.CLASS_NAME, 'chat-scrollable-area__message-container')
+    # chat_message = (By.CLASS_NAME, 'chat-line__message')
+    # elementButon = wait.until(EC.visibility_of_element_located(chat_message))
+    # all_chats = driver.find_elements(chat_message)
+
     print("moving on...")
 
     # Step 2: Create a parse tree of page sources after searching
