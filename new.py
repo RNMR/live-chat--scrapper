@@ -46,7 +46,7 @@ def getChat(driver):
   # all_messages = element.find_elements(By.CLASS_NAME, "chat-line__message")
 
   dataCounter = 0
-  while len(data) <= 20:
+  while len(data) <= 50:
     try:
       soup = BeautifulSoup(driver.page_source, "lxml") #Repetir esto para refreshear mensajes
       # for chat_msg in driver.find_element("div.chat-scrollable-area__message-container div.chat-line__message"):
@@ -54,26 +54,34 @@ def getChat(driver):
         if(len(chat_msg) != 0):
           username_selector = "div.chat-line__message-container div.chat-line__username-container span.chat-author__display-name"
           # body_selector = "div.chat-line__message-container div.chat-line__no-background span.text-fragment"
+          # raw = 'div.chat-line__message-container div.chat-line__no-background span[data-a-target="chat-line-message-body"]'
+          raw = []
           live_date = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
           message_selector = "div.chat-line__message-container div.chat-line__no-background span[data-a-target='chat-line-message-body']"
           for message_value in chat_msg.select('div.chat-line__message-container div.chat-line__no-background span[data-a-target="chat-line-message-body"]'):
             print(message_value)
             print(f"{dataCounter}")
+            raw.append(message_value)
 
           dataCounter = dataCounter + 1
           data.append({"user" : chat_msg.select_one(username_selector).text,
             # "body" : chat_msg.select_one(body_selector).text,
+            # "raw" : chat_msg.select_one(raw),
             "live_date" : live_date,
-            "message_selector" : chat_msg.select_one(message_selector).text})
+            "message_selector" : chat_msg.select_one(message_selector).text,
+            "raw" : raw
+          })
         else:
           time.sleep(3)
     except Exception as e:
+      print("ERROR:")
       print(f"Error es: {e}")
       exit()
 
 
   return data
 
+startTime = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
 # create the driver object.
 driver = configure_driver()
 driver.implicitly_wait(20)
@@ -82,19 +90,22 @@ data = getChat(driver)
 
 
 print("--------")
-print(data)
 driver.close()
 
 
 import csv
 field_names= [
-  'user', 
-  # 'body', 
-  'live_date', 
-  'message_selector' 
+  'user',
+  # 'body',
+  'live_date',
+  'message_selector',
+  'raw'
 ]
-
 with open('live_chat.csv', 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=field_names)
+    endTime = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+    header = "FROM: " + startTime + " - " + endTime
     writer.writeheader()
+    # writer.writerow(header)
+    print(header)
     writer.writerows(data)
