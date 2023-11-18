@@ -30,7 +30,8 @@ def configure_driver():
 
 def getChat(driver):
   
-  driver.get(f"https://www.twitch.tv/xcry")
+  # driver.get(f"https://www.twitch.tv/xcry")
+  driver.get(f"https://www.twitch.tv/mrchoco")
   # wait for the element to load
   wait = WebDriverWait(driver, 10)
 
@@ -48,20 +49,25 @@ def getChat(driver):
   dataCounter = 0
   while len(data) <= 50:
     try:
-      soup = BeautifulSoup(driver.page_source, "lxml") #Repetir esto para refreshear mensajes
+      soup = BeautifulSoup(driver.page_source, "html.parser") #Repetir esto para refreshear mensajes
       # for chat_msg in driver.find_element("div.chat-scrollable-area__message-container div.chat-line__message"):
+      # Aca empieza a tomar los mensajes de chat desde donde se quedo en la última leida
       for chat_msg in soup.select("div.chat-scrollable-area__message-container div.chat-line__message")[dataCounter:]:
         if(len(chat_msg) != 0):
           username_selector = "div.chat-line__message-container div.chat-line__username-container span.chat-author__display-name"
           # body_selector = "div.chat-line__message-container div.chat-line__no-background span.text-fragment"
           # raw = 'div.chat-line__message-container div.chat-line__no-background span[data-a-target="chat-line-message-body"]'
           raw = []
+          classes = []
           live_date = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
           message_selector = "div.chat-line__message-container div.chat-line__no-background span[data-a-target='chat-line-message-body']"
           for message_value in chat_msg.select('div.chat-line__message-container div.chat-line__no-background span[data-a-target="chat-line-message-body"]'):
             print(message_value)
+            print(message_value['class'])
             print(f"{dataCounter}")
-            raw.append(message_value)
+            print("--------")
+            classes.append(message_value['class'])
+            raw.append(message_value.get_text())
 
           dataCounter = dataCounter + 1
           data.append({"user" : chat_msg.select_one(username_selector).text,
@@ -69,6 +75,7 @@ def getChat(driver):
             # "raw" : chat_msg.select_one(raw),
             "live_date" : live_date,
             "message_selector" : chat_msg.select_one(message_selector).text,
+            "classes" : classes,
             "raw" : raw
           })
         else:
@@ -99,6 +106,7 @@ field_names= [
   # 'body',
   'live_date',
   'message_selector',
+  'classes',
   'raw'
 ]
 with open('live_chat.csv', 'w') as csvfile:
