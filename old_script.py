@@ -32,7 +32,7 @@ def configure_driver():
 def getChat(driver):
   
   # driver.get(f"https://www.twitch.tv/xcry")
-  driver.get(f"https://www.twitch.tv/ibai")
+  driver.get(f"https://www.twitch.tv/maximum")
   # wait for the element to load
   wait = WebDriverWait(driver, 10)
 
@@ -46,33 +46,17 @@ def getChat(driver):
   
   # element = driver.find_element(By.CLASS_NAME, "chat-scrollable-area__message-container")
   # all_messages = element.find_elements(By.CLASS_NAME, "chat-line__message")
-  
+
   dataCounter = 0
-  continue_index = 0
-  dataPlaceholder = []
-  twitchLimit = 149 # Limite de twitch
-  msgLimit = 500
-  last_chat = ""
-  entireChat = []
+  msgLimit = 149
   while len(data) <= msgLimit:
   # while dataCounter <= 150:
     try:
-      # sys.stdout.write("\r%d%%" % (dataCounter/msgLimit*100))
-      sys.stdout.write("\r%d%%" % (dataCounter)) # data y datCounter deben separarse, twitch renderiza un maximo de {twitchLimit} chats - hecho
+      sys.stdout.write("\r%d%%" % (dataCounter/msgLimit*100))
       soup = BeautifulSoup(driver.page_source, "html.parser") #Repetir esto para refreshear mensajes
       # for chat_msg in driver.find_element("div.chat-scrollable-area__message-container div.chat-line__message"):
-      entireChat = soup.select("div.chat-scrollable-area__message-container div.chat-line__message")
-
-      if dataCounter!=0:
-        try:
-          continue_index = len(entireChat) - entireChat[::-1].index(last_chat)  # obten el index del ultimo elemento q coincide (+1)
-        except Exception as e:
-          print("horrible error")
-          print(last_chat)
-          print(entireChat[-1])
-          print("horrible error")
       # Aca empieza a tomar los mensajes de chat desde donde se quedo en la última leida
-      for chat_msg in entireChat[continue_index:]:
+      for chat_msg in soup.select("div.chat-scrollable-area__message-container div.chat-line__message")[dataCounter:]:
         if(len(chat_msg) != 0):
           username_selector = "div.chat-line__message-container div.chat-line__username-container span.chat-author__display-name"
           # body_selector = "div.chat-line__message-container div.chat-line__no-background span.text-fragment"
@@ -98,28 +82,18 @@ def getChat(driver):
             "live_date" : live_date,
             "message_selector" : chat_msg.select_one(message_selector).text,
             "classes" : classes,
-            # "rawText" : " ".join(textRow),
+            "rawText" : " ".join(textRow),
             # "rawText" : textRow,
             "raw" : raw
           })
-          last_chat = entireChat[-1] # obtiene el ultimo chat
-          # print(chat_msg.select_one(username_selector).text)
-          # print(chat_msg.select_one(message_selector).text)
-          # if len(data) >= twitchLimit:
-          #   dataPlaceholder.append(data)
-          #   data.clear()
-          #   dataCounter = 0
-            
+          # print("row done")
         else:
           print("REFRESHING....")
       # out of the for loop
       # time.sleep(3)
     except Exception as e:
       print("ERROR:")
-      traceback.print_exc()
       print(f"Error es: {e}")
-      print("TERMINO CON ERROR:")
-      return data
       exit()
 
   print("-----LOOP ENDED, CLOSING...---")
@@ -144,11 +118,11 @@ field_names= [
   'live_date',
   'message_selector',
   'classes',
-  # 'rawText',
+  'rawText',
   'raw'
 ]
 print("doing CSV")
-with open('futbol-femenino-chat.csv', 'w') as csvfile:
+with open('live_chat.csv', 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=field_names)
     endTime = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
     header = "FROM: " + startTime + " - " + endTime
