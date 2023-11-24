@@ -32,7 +32,7 @@ def configure_driver():
 def getChat(driver):
   
   # driver.get(f"https://www.twitch.tv/xcry")
-  driver.get(f"https://www.twitch.tv/ibai")
+  driver.get(f"https://www.twitch.tv/pokemon")
   # wait for the element to load
   wait = WebDriverWait(driver, 10)
 
@@ -51,7 +51,7 @@ def getChat(driver):
   continue_index = 0
   dataPlaceholder = []
   twitchLimit = 149 # Limite de twitch
-  msgLimit = 500
+  msgLimit = 200
   last_chat = ""
   entireChat = []
   while len(data) <= msgLimit:
@@ -69,8 +69,11 @@ def getChat(driver):
         except Exception as e:
           print("horrible error")
           print(last_chat)
+          print("-------------------------------")
           print(entireChat[-1])
           print("horrible error")
+          return data
+          exit()
       # Aca empieza a tomar los mensajes de chat desde donde se quedo en la última leida
       for chat_msg in entireChat[continue_index:]:
         if(len(chat_msg) != 0):
@@ -148,7 +151,7 @@ field_names= [
   'raw'
 ]
 print("doing CSV")
-with open('futbol-femenino-chat.csv', 'w') as csvfile:
+with open('pokemon_stream-chat.csv', 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=field_names)
     endTime = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
     header = "FROM: " + startTime + " - " + endTime
