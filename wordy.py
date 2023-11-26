@@ -9,7 +9,7 @@ print(df.head())
 chat = " ".join(df['message_selector'].astype(str))
 
 # Define custom stopwords
-custom_stopwords = set(["https", "www", "que", "to", "el","de","a","el","la","lo","e","y","con","se"])
+custom_stopwords = set(["https", "www", "que", "to", "el","de","a","el","la","lo","e","y","con","se"]) | set(STOPWORDS)
 # custom_stopwords = set(STOPWORDS)
 
 word_cloud = WordCloud(width=1000, height=600, stopwords=custom_stopwords, collocations = False, background_color = 'white').generate(chat)
